@@ -1,0 +1,174 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Country:
+    code: str
+    population: int = 0
+
+
+fr = Country(code="FR", population=75)
+print(fr)
+# Country(code='FR', population=75)
+
+code = fr.code
+
+# Mutable by default but @dataclass(frozen=True) will make it immutable
+fr.code = "FRANCE"
+
+fr = Country(code="FR", population="75M")
+print(fr)
+# Country(code='FR', population='75M')
+
+
+@dataclass(order=True)
+class Country:
+    code: str
+    population: int = 0  # defaults
+
+
+fr = Country(code="FR", population=75)
+de = Country(code="DE", population=85)
+it = Country(code="IT", population=60)
+pt = Country(code="PT", population=10)
+at = Country(code="AT", population=15)
+
+emea = [fr, de, it, pt, at]
+
+print(sorted(emea))
+# [Country(code='AT', population=15),Country(code='DE', population=85), Country(code='FR', population=75), Country(code='IT', population=60), Country(code='PT', population=10)]
+# Pretty difficult to do on a normal class, there is a helper decorator in functools (total_ordering) but it doesn't check class
+
+
+@dataclass(order=True)
+class EmeaCountry(Country):
+    code: str
+    population: int = 0
+
+
+fr = Country(code="FR", population=75)
+fr2 = Country(code="FR", population=75)
+fr3 = EmeaCountry(code="FR", population=75)
+
+
+print(fr == fr2)
+# True
+print(fr == fr2 == fr3)
+# False
+
+# Unlike namedtuples this checks the class as well, inherited dataclass would be the same
+# If you don't want this behaviour you can pass @dataclass(eq=False) and then f2 == fr2 would be false
+from dataclasses import field, fields
+
+
+@dataclass(order=True)
+class Country:
+    code: str
+    stores: field(repr=False, default_factory=list, compare=False)
+    revenue: int = field(repr=False, metadata={"currency": "EUROS"})
+    daily_revenue: int = field(init=False,repr=False,metadata={"currency": "EUROS"})
+    population: int = 0 # default field moved to bottom
+
+
+    def __post_init__(self):
+        self.daily_revenue = self.revenue / 365
+
+    @property
+    def number_stores(self):
+        return len(self.stores)
+
+    def add_store(self, store: str):
+        self.stores.append(store)
+
+
+fr = Country(
+    code="FR", population=75, revenue=1000, stores=["TOULON CENTRAL", "TOULOUSE SOUTH"]
+)
+fr.add_store('BIRITTIZ')
+print(fr)
+# Country(code='FR', stores=['TOULON CENTRAL', 'TOULOUSE SOUTH'], population=75)
+revenue_field = fields(fr)[2]
+print(revenue_field.metadata["currency"])
+
+print( [field.name for field in fields(fr)])
+# ['code', 'stores', 'revenue', 'daily_revenue', 'population']
+
+
+
+# TODO
+# @dataclass
+# class ApacCountry(Country):
+#     region : str
+
+# non-default argument 'region' follows default argument
+
+
+# Inheritance
+
+
+
+
+# Composition
+from typing import List
+
+@dataclass
+class Store:
+    code : str
+    size : str
+    revenue : int
+
+
+@dataclass
+class Country:
+    code: str
+    stores : List[Store]
+
+stores = [
+    Store(code='PARIS',size='M',revenue=100),
+    Store(code='LYON',size='S',revenue=100)
+
+]
+fr = Country(code='FR',stores=stores)
+print(fr.stores)
+# [Store(code='PARIS', size='M', revenue=100), Store(code='LYON', size='S', revenue=100)]
+
+
+@dataclass
+class Store:
+    code : str
+    size : str = field(repr=False)
+    revenue : int = field(repr=False)
+    country : field(init=False) = None
+
+    def get_size(self):
+        return self.size
+
+    def register_country(self,country):
+        self.country = country
+
+
+@dataclass
+class Country:
+    code: str
+    stores : List[Store] = field(repr=False)
+
+    def __post_init__(self):
+        for store in self.stores:
+            store.register_country(self)
+
+stores = [
+    Store(code='PARIS',size='M',revenue=100),
+    Store(code='LYON',size='S',revenue=100)
+
+]
+
+fr = Country(code='FR',stores=stores)
+print(fr.stores[0])
+# Store(code='PARIS', country=Country(code='FR'))
+
+print(fr.stores[0].country)
+# Country(code='FR')
+
+
+
+# TODO - add asdict
