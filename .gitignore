@@ -1,16 +1,6 @@
 .local/
 .local
 .data/
-data/
-cache/
-data_cache/
-compiled_models/
-tmp/
-prototypes/
-mlruns/
-mlflow_tracking/
-# user configuration file
-config.*.yml
 
 *.db
 *.xlsx
@@ -19,32 +9,12 @@ config.*.yml
 *~
 *#
 #*
-coverage_html_report/
 
-# Created by https://www.gitignore.io/api/python,jupyternotebook
-# Edit at https://www.gitignore.io/?templates=python,jupyternotebook
-
-### JupyterNotebook ###
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# Remove previous ipynb_checkpoints
-#   git rm -r .ipynb_checkpoints/
-#
-
-# Pycharm
-.idea
-*.iml
-
-### Python ###
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 # C extensions
-*.so
-
 # Distribution / packaging
 .Python
 build/
@@ -147,9 +117,6 @@ venv.bak/
 .spyderproject
 .spyproject
 
-# Rope project settings
-.ropeproject∆
-
 # mkdocs documentation
 /site
 
@@ -161,31 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Added symlink
-data2
-
-# Credentials file
-.credentials/*.json
-!.credentials/toolbox-unit-tests.json.enc
-airflow/*.json
-
-# End of https://www.gitignore.io/api/python,jupyternotebook
-
-# Symlink to data
-data_link
-
-# Allow test files
-!config.test.*.yml
-!test.*.xls
-!test.*.xlsx
-!test.*.csv
-!mockup/data/
-mockup/data/output
 
 # git
 **/.DS_Store
 
-# Modelling sandbox
-nbm_toolbox/sandbox/
-frontier_parameters_*.json
-settings.json
