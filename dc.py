@@ -36,7 +36,13 @@ at = Country(code="AT", population=15)
 emea = [fr, de, it, pt, at]
 
 print(sorted(emea))
-# [Country(code='AT', population=15),Country(code='DE', population=85), Country(code='FR', population=75), Country(code='IT', population=60), Country(code='PT', population=10)]
+# [
+# Country(code='AT', population=15),
+# Country(code='DE', population=85), 
+# Country(code='FR', population=75),
+#  Country(code='IT', population=60), 
+# Country(code='PT', population=10)
+# ]
 # Pretty difficult to do on a normal class, there is a helper decorator in functools (total_ordering) but it doesn't check class
 
 
@@ -91,25 +97,24 @@ revenue_field = fields(fr)[2]
 print(revenue_field.metadata["currency"])
 
 print( [field.name for field in fields(fr)])
-# ['code', 'stores', 'revenue', 'daily_revenue', 'population']
+# > ['code', 'stores', 'revenue', 'daily_revenue', 'population']
 
 
+# Subclassing / Inheritance '...is bad for you' according to attrs authors https://www.attrs.org/en/stable/examples.html
 
-# TODO
-# @dataclass
-# class ApacCountry(Country):
-#     region : str
+try:
+    @dataclass
+    class ApacCountry(Country):
+        region : str
+except TypeError as error:
+    pass
 
-# non-default argument 'region' follows default argument
-
-
-# Inheritance
-
-
-
+# > Non-default argument 'region' follows default argument
 
 # Composition
 from typing import List
+from dataclasses import asdict
+
 
 @dataclass
 class Store:
@@ -130,13 +135,15 @@ stores = [
 ]
 fr = Country(code='FR',stores=stores)
 print(fr.stores)
-# [Store(code='PARIS', size='M', revenue=100), Store(code='LYON', size='S', revenue=100)]
+# > [Store(code='PARIS', size='M', revenue=100), Store(code='LYON', size='S', revenue=100)]
+print (asdict(fr))
+# > {'code': 'FR', 'stores': ['TOULON CENTRAL', 'TOULOUSE SOUTH', 'BIRITTIZ'], 'revenue': 1000, 'daily_revenue': 2.73972602739726, 'population': 75}
 
 
 @dataclass
 class Store:
     code : str
-    size : str = field(repr=False)
+    size : str 
     revenue : int = field(repr=False)
     country : field(init=False) = None
 
@@ -145,6 +152,9 @@ class Store:
 
     def register_country(self,country):
         self.country = country
+
+    def __str__(self):
+        return f'<Store> Code: "{self.code}" Country: "{self.country.code}"'
 
 
 @dataclass
@@ -163,12 +173,9 @@ stores = [
 ]
 
 fr = Country(code='FR',stores=stores)
+
+# > fr.stores[0]
+# Store(code='PARIS', size='M', country=Country(code='FR'))
+
 print(fr.stores[0])
-# Store(code='PARIS', country=Country(code='FR'))
-
-print(fr.stores[0].country)
-# Country(code='FR')
-
-
-
-# TODO - add asdict
+# > <Store> Code: "PARIS" Country: "FR"
