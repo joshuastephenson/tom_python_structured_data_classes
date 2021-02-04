@@ -1,7 +1,6 @@
 import pprint
 
 from pydantic import (
-    BaseModel,
     constr,
     conint,
     conlist,
@@ -9,9 +8,7 @@ from pydantic import (
     StrictInt,
     validator,
     ValidationError,
-
 )
-
 from pydantic.dataclasses import dataclass
 
 """
@@ -21,9 +18,10 @@ https://pydantic-docs.helpmanual.io/
 """
 
 
-class Country(BaseModel):
+@dataclass
+class Country:
 
-    population: PositiveInt  
+    population: PositiveInt
     code: constr(min_length=2, max_length=2)
 
     @validator("code")
@@ -39,7 +37,6 @@ class Country(BaseModel):
     #   conlist
     #   constr
 
-
     # The default types will attempt best effort conversion
     # There are also strict types such as StrictInt, StrictInt
     # which will not
@@ -48,12 +45,11 @@ class Country(BaseModel):
 # Conversion happens when possible
 fr = Country(population="123", code="FR")
 
-# Equality check works like a dataclass 
+# Equality check works just like a dataclass
 fr = Country(population=123, code="FR")
 fr2 = Country(population=123, code="FR")
 print(fr == fr2)
 # > True
-
 
 try:
     fr = Country(population=123, code="F1")
@@ -62,46 +58,72 @@ except ValidationError:
     # > Code must be alphanumeric (type=value_error)
 
 
-pprint.pprint(fr.schema())
+# Pydantic validators are pretty flexible
+import dataclasses
+
+CURRENCIES = {'US':"$",'GB': "£"}
+
+
+@dataclass
+class Country:
+
+    code: constr(min_length=2, max_length=2)
+    revenue: conint(multiple_of=1000)
+    cost: conint(multiple_of=1000)
+    population: conint(multiple_of=1000) = 0
+    # You can still bring in elements from standard dataclasses
+    stores: conlist(str, min_items=0, max_items=10) = dataclasses.field(default_factory=list)
+
+    @validator('stores',each_item=True)
+    def as_code(cls, v):
+        assert v.upper() == v and ' ' not in v
+        return v 
+
+    @validator(
+        "revenue", "cost",pre=True
+    )  # pre means we run this prior to other validation on these fields
+    def remove_currency(cls, v, values):
+        country_code = values['code']
+        if isinstance(v, str) and v.startswith(CURRENCIES[country_code]) and len(v) > 1:
+            return v[1:]
+        return v
+
+    
+
+
+us = Country(code="US", revenue=1000, cost="$1000")
+us = Country(code="US", revenue=1000, cost="$1000",stores=['NEW_YORK'])
+try:
+    us = Country(code="US", revenue=1000, cost="$1000",stores=['NEW YORK'])
+except ValidationError:
+    pass
+
+# Other nice things include init hook post_init_post_parse which happens after validation
+
+
+
+pprint.pprint(fr.__pydantic_model__.schema())
 # {'properties': {'code': {'maxLength': 2,
 #                          'minLength': 2,
 #                          'title': 'Code',
 #                          'type': 'string'},
-#                 'population': {'exclusiveMinimum': 0,
+#                 'cost': {'multipleOf': 1000,
+#                          'title': 'Cost',
+#                          'type': 'integer'},
+#                 'population': {'default': 0,
+#                                'multipleOf': 1000,
 #                                'title': 'Population',
-#                                'type': 'integer'}},
-#  'required': ['population', 'code'],
+#                                'type': 'integer'},
+#                 'revenue': {'multipleOf': 1000,
+#                             'title': 'Revenue',
+#                             'type': 'integer'},
+#                 'stores': {'default': [],
+#                            'items': {'type': 'string'},
+#                            'maxItems': 10,
+#                            'minItems': 0,
+#                            'title': 'Stores',
+#                            'type': 'array'}},
+#  'required': ['code', 'revenue', 'cost'],
 #  'title': 'Country',
 #  'type': 'object'}
-
-as_dict = fr.dict()
-
-fr3 = Country.parse_obj(as_dict)
-
-
-class Store(BaseModel):
-    code: constr(min_length=4) # Also accepts regex
-    revenue: conint(multiple_of=100)
-
-
-class Country(BaseModel):
-    code: constr(min_length=2, max_length=2)
-    population: conint(multiple_of=1000)
-    stores: conlist(Store, min_items=1, max_items=100)
-
-
-fr_as_dict = {
-    "code": "FR",
-    "population": 1000,
-    "stores": [
-        {"code": "TOULON", "revenue": 100},
-        {"code": "MONTPELLIER", "revenue": 100},
-    ],
-}
-
-fr = Country.parse_obj(fr_as_dict)
-# Country(code='FR', population=1000, stores=[Store(code='TOULON', revenue=100), Store(code='MONTPELLIER', revenue=100)])
-fr_as_json = fr.json()
-fr = Country.parse_raw(fr_as_json)
-
 # Gotchas? ....
