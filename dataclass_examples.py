@@ -1,26 +1,55 @@
 from dataclasses import dataclass
 
 
+# This generates a full class complete with a few dunder methods (e.g __init__, __repr__, __eq___)  setup how you probably want them
+
 @dataclass
 class Country:
     code: str
     population: int = 0
 
-
 fr = Country(code="FR", population=75)
 print(fr)
-# Country(code='FR', population=75)
+# > Country(code='FR', population=75)
 
-code = fr.code
+print(fr.code)
+# > "FR"
+
+
 
 # Mutable by default but @dataclass(frozen=True) will make it immutable
 fr.code = "FRANCE"
 
+# Doesn't have automatic type validation 
 fr = Country(code="FR", population="75M")
 print(fr)
-# Country(code='FR', population='75M')
+# > Country(code='FR', population='75M')
+
+# Nor type conversion
+fr = Country(code="FR", population="75")
+# > Country(code='FR', population="75")
 
 
+@dataclass()
+class EmeaCountry(Country):
+    code: str
+    population: int = 0
+
+
+fr = Country(code="FR", population=75)
+fr2 = Country(code="FR", population=75)
+fr3 = EmeaCountry(code="FR", population=75)
+
+print(fr == fr2)
+# > True
+print(fr == fr2 == fr3)
+# > False
+
+# Unlike classes the __eq__ checks values, unlike namedtuples this checks the class as well
+# If you don't want this behaviour you can pass @dataclass(eq=False) and then f2 == fr2 would be false
+
+
+# TODO show compare = False
 @dataclass(order=True)
 class Country:
     code: str
@@ -36,34 +65,16 @@ at = Country(code="AT", population=15)
 emea = [fr, de, it, pt, at]
 
 print(sorted(emea))
-# [
-# Country(code='AT', population=15),
-# Country(code='DE', population=85), 
-# Country(code='FR', population=75),
-#  Country(code='IT', population=60), 
-# Country(code='PT', population=10)
+# > [
+# > Country(code='AT', population=15),
+# > Country(code='DE', population=85), 
+# > Country(code='FR', population=75),
+# > Country(code='IT', population=60), 
+# > Country(code='PT', population=10)
 # ]
 # Pretty difficult to do on a normal class, there is a helper decorator in functools (total_ordering) but it doesn't check class
 
 
-@dataclass(order=True)
-class EmeaCountry(Country):
-    code: str
-    population: int = 0
-
-
-fr = Country(code="FR", population=75)
-fr2 = Country(code="FR", population=75)
-fr3 = EmeaCountry(code="FR", population=75)
-
-
-print(fr == fr2)
-# True
-print(fr == fr2 == fr3)
-# False
-
-# Unlike namedtuples this checks the class as well, inherited dataclass would be the same
-# If you don't want this behaviour you can pass @dataclass(eq=False) and then f2 == fr2 would be false
 from dataclasses import field, fields
 
 
@@ -72,7 +83,7 @@ class Country:
     code: str
     stores: field(repr=False, default_factory=list, compare=False)
     revenue: int = field(repr=False, metadata={"currency": "EUROS"})
-    daily_revenue: int = field(init=False,repr=False,metadata={"currency": "EUROS"})
+    daily_revenue: int = field(init=False, repr=False, metadata={"currency": "EUROS"})
     population: int = 0 # default field moved to bottom
 
 
@@ -90,9 +101,10 @@ class Country:
 fr = Country(
     code="FR", population=75, revenue=1000, stores=["TOULON CENTRAL", "TOULOUSE SOUTH"]
 )
-fr.add_store('BIRITTIZ')
+fr.add_store('BIARRITZ')
 print(fr)
-# Country(code='FR', stores=['TOULON CENTRAL', 'TOULOUSE SOUTH'], population=75)
+# > Country(code='FR', stores=['TOULON CENTRAL', 'TOULOUSE SOUTH'], population=75)
+
 revenue_field = fields(fr)[2]
 print(revenue_field.metadata["currency"])
 
@@ -109,7 +121,7 @@ try:
 except TypeError as error:
     pass
 
-# > Non-default argument 'region' follows default argument
+# > Error - Non-default argument 'region' follows default argument
 
 # Composition
 from typing import List

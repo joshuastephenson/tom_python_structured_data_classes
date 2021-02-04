@@ -16,7 +16,6 @@ from pydantic.dataclasses import dataclass
 
 class Country(BaseModel):
 
-    # Mix of : / = is a little confusing
     population: PositiveInt  # StrictInt means that the value passed would have to be an int
     code: constr(min_length=2, max_length=2)
 

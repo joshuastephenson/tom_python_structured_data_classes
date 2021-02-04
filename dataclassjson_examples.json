@@ -12,11 +12,11 @@ class Country:
 
 fr = Country('FR',1)
 print(fr)
-# >Country(code='FR', population=1)
+# > Country(code='FR', population=1)
 
 fr2 = Country('FR','1')
 print(fr2)
-# >Country(code='FR', population='1')
+# > Country(code='FR', population='1')
 
 fr3 = Country(code='FR', population='ONE')
 print(fr3)

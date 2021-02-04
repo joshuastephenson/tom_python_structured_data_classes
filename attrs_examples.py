@@ -62,7 +62,7 @@ class Country:
 
 "Their main advantage is that they use less memory on CPython 1 and are slightly faster.
 
-However they also come with several possibly surprising gotchas:"
+However, they also come with several possibly surprising gotchas:"
 
     - You can't add attributes post init
     - Combining with non-slotted gets tricky
