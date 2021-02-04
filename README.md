@@ -1,4 +1,4 @@
-# Structured Data Type in Python
+# Structured Data Classes in Python
 
 ## Why use any of these?
 
