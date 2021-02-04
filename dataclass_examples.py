@@ -56,7 +56,7 @@ from dataclasses import field, fields
 @dataclass(order=True)
 class Country:
     code: str = field(compare=False)
-    population: int = field(compare=True, default=0) 
+    population: int = field(compare=True, default=0)
 
 
 fr = Country(code="FR", population=75)
@@ -222,8 +222,8 @@ fr = Country(code="FR", stores=stores)
 # > fr.stores[0]
 # Store(code='PARIS', size='M', country=Country(code='FR'))
 
+
 print(fr.stores[0])
 # > <Store> Code: "PARIS" Country: "FR"
 
-# Gotchas? Lack of type validation
-
+# Gotchas? Lack of type validation; not necessarily obvious which dunder methods it actually creates

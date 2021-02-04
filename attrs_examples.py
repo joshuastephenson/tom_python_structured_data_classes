@@ -1,7 +1,13 @@
 import attr
+"""
+attrs is the Python package that will bring back the joy of writing classes by relieving you from the drudgery of implementing object protocols (aka dunder methods).
+
+Its main goal is to help you to write concise and correct software without slowing down your code.
+https://www.attrs.org/en/stable/
+"""
 
 
-# Validators
+# Validators 
 
 def less_than_population(instance, attribute, value):
     if value > instance.population:
@@ -13,6 +19,12 @@ class Country:
     code = attr.ib(validator=attr.validators.instance_of(str))
     population = attr.ib(validator=attr.validators.instance_of(int))
     customers = attr.ib(validator=[attr.validators.instance_of(int), less_than_population], default=0)
+
+    # Options for validators include....
+    #   matches_re
+    #   in
+    #   deep_iterable
+    #   is_callable
 
 
 fr = Country(code="FR", population=100)
@@ -30,7 +42,12 @@ try:
 except ValueError as e:
     print(e)
 # ...<function less_than_population at ...
- 
+
+
+# Sometimes attrs feels a little less slick than the others...
+print(attr.asdict(fr,filter=attr.filters.exclude(attr.fields(Country).customers)))
+# > {'code': 'FR', 'population': 100}
+
 
 # Converters
 
@@ -68,3 +85,6 @@ However, they also come with several possibly surprising gotchas:"
     - You can't monkeypatch
     - ...
 
+"""
+
+# Has the same conversion to dict / duple and frozen options as we've seen
