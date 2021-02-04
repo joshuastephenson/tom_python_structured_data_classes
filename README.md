@@ -12,9 +12,11 @@ Why use any of these?
 - Pydantic Models: part of the Pydantic package which uses type annotations to bring type validation to Python
 
 -----------------------------------
-                | Power    |  Intuitiveness
-Named Tuples    |   3      |      8
-Attrs           |   10     |      7
-Dataclasses     |   6      |      10
-DataclassesJSON |   7      |      7
-Pydantic Models |   9      |      9
+
+| Option          | Power    |  Intuitiveness   |
+| --------------- | -------- | ---------------- |
+| Named Tuples    |   3      |      8   |
+| Attrs           |   10     |      7   |
+| Dataclasses     |   6      |      10  |
+| DataclassesJSON |   7      |      7   |
+| Pydantic Models |   9      |      9   |
