@@ -1,9 +1,11 @@
 # Structured Data Type in Python
 
-Why use any of these?
+## Why use any of these?
 
 - Compared to dicts / lists they add structure, readability
 - They are quicker to create than normal classes and have 'quality by default'
+
+## A Few of the Options
 
 - **NamedTuple**: tuples with names (and types if you want)
 - **Attrs**: "the Python package that will bring back the joy of writing classes by relieving you from the drudgery of implementing object protocols (aka dunder methods)"; powerful but not especially intuitive or pretty
