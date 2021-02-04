@@ -30,7 +30,7 @@ fr = Country(population="123", code="FR")
 fr = Country(population=123, code="FR")
 fr2 = Country(population=123, code="FR")
 
-# Technically this isn't a dataclass but it behaves a lot like one
+# This isn't a dataclass but it behaves a lot like one
 print(fr == fr2)
 
 try:
@@ -82,3 +82,5 @@ fr = Country.parse_obj(fr_as_dict)
 # Country(code='FR', population=1000, stores=[Store(code='TOULON', revenue=100), Store(code='MONTPELLIER', revenue=100)])
 fr_as_json = fr.json()
 fr = Country.parse_raw(fr_as_json)
+
+# Gotchas? TBC

@@ -49,7 +49,6 @@ except ValueError as e:
     print(e)
     # invalid literal for int()...
 
-
 # Slots
 
 
@@ -69,5 +68,3 @@ However, they also come with several possibly surprising gotchas:"
     - You can't monkeypatch
     - ...
 
-
-"Sub-classing is bad for you"

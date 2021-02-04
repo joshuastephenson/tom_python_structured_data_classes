@@ -30,6 +30,7 @@ print(fr)
 fr2 = Country.schema().load({'code' : 'FR','population' : '1'})
 print(fr2)
 # > Country(code='FR', population=1)
+# Type conversion!
 
 
 try:
@@ -37,8 +38,11 @@ try:
 except ValidationError as e:
     print(e)
     # > {'population': ['Not a valid integer.']}
+# Type validation!
 
 # Same with schema.dump() which transforms back to a dict
 
 print([fr.to_json(),fr.to_dict()])
 # > ['{"code": "FR", "population": 1}', {'code': 'FR', 'population': 1}]
+
+# Gotcha? Not at all obvious to load / dump via schema, not totally clear what gets converted - True will not --> 1
