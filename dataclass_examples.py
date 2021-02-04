@@ -123,6 +123,8 @@ except TypeError as error:
 
 # > Error - Non-default argument 'region' follows default argument
 
+
+
 # Composition
 from typing import List
 from dataclasses import asdict
@@ -140,6 +142,7 @@ class Country:
     code: str
     stores : List[Store]
 
+
 stores = [
     Store(code='PARIS',size='M',revenue=100),
     Store(code='LYON',size='S',revenue=100)
@@ -150,6 +153,36 @@ print(fr.stores)
 # > [Store(code='PARIS', size='M', revenue=100), Store(code='LYON', size='S', revenue=100)]
 print (asdict(fr))
 # > {'code': 'FR', 'stores': ['TOULON CENTRAL', 'TOULOUSE SOUTH', 'BIRITTIZ'], 'revenue': 1000, 'daily_revenue': 2.73972602739726, 'population': 75}
+
+import pandas as pd
+
+stores += [
+    Store(code='BREST',size='S',revenue=100),
+    Store(code='CALAIS',size='M',revenue=100),
+    Store(code='NANTES',size='S',revenue=100),
+    Store(code='NICE',size='S',revenue=100),
+    Store(code='BORDEAUX',size='S',revenue=100),
+]
+
+@dataclass
+class Country:
+    code: str
+    stores : List[Store]
+
+    def as_dataframe(self):
+        return pd.DataFrame([{'country_code' : self.code} | asdict(store)  for store in self.stores])
+
+fr = Country(code='FR',stores=stores)
+print(fr.as_dataframe().head())
+
+# >   country_code    code size  revenue
+# > 0           FR   PARIS    M      100
+# > 1           FR    LYON    S      100
+# > 2           FR   BREST    S      100
+# > 3           FR  CALAIS    M      100
+# > 4           FR  NANTES    S      100
+
+
 
 
 @dataclass
