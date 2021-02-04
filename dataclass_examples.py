@@ -1,12 +1,15 @@
 from dataclasses import dataclass
 
+# "provides a decorator... for automatically adding generated special methods such as __init__() and __repr__() to user-defined classes."
+# Aim is to create the class how you probably want it and provide options if you want something different
+# https://docs.python.org/3/library/dataclasses.html
 
-# This generates a full class complete with a few dunder methods (e.g __init__, __repr__, __eq___)  setup how you probably want them
 
 @dataclass
 class Country:
     code: str
     population: int = 0
+
 
 fr = Country(code="FR", population=75)
 print(fr)
@@ -16,11 +19,10 @@ print(fr.code)
 # > "FR"
 
 
-
 # Mutable by default but @dataclass(frozen=True) will make it immutable
 fr.code = "FRANCE"
 
-# Doesn't have automatic type validation 
+# Doesn't have automatic type validation
 fr = Country(code="FR", population="75M")
 print(fr)
 # > Country(code='FR', population='75M')
@@ -48,12 +50,13 @@ print(fr == fr2 == fr3)
 # Unlike classes the __eq__ checks values, unlike namedtuples this checks the class as well
 # If you don't want this behaviour you can pass @dataclass(eq=False) and then f2 == fr2 would be false
 
+from dataclasses import field, fields
 
-# TODO show compare = False
+
 @dataclass(order=True)
 class Country:
-    code: str
-    population: int = 0  # defaults
+    code: str = field(compare=False)
+    population: int = field(compare=True, default=0) 
 
 
 fr = Country(code="FR", population=75)
@@ -65,13 +68,7 @@ at = Country(code="AT", population=15)
 emea = [fr, de, it, pt, at]
 
 print(sorted(emea))
-# > [
-# > Country(code='AT', population=15),
-# > Country(code='DE', population=85), 
-# > Country(code='FR', population=75),
-# > Country(code='IT', population=60), 
-# > Country(code='PT', population=10)
-# ]
+# > [Country(code='PT', population=10), Country(code='AT', population=15), Country(code='IT', population=60), Country(code='FR', population=75), Country(code='DE', population=85)]
 # Pretty difficult to do on a normal class, there is a helper decorator in functools (total_ordering) but it doesn't check class
 
 
@@ -84,8 +81,7 @@ class Country:
     stores: field(repr=False, default_factory=list, compare=False)
     revenue: int = field(repr=False, metadata={"currency": "EUROS"})
     daily_revenue: int = field(init=False, repr=False, metadata={"currency": "EUROS"})
-    population: int = 0 # default field moved to bottom
-
+    population: int = 0
 
     def __post_init__(self):
         self.daily_revenue = self.revenue / 365
@@ -101,78 +97,84 @@ class Country:
 fr = Country(
     code="FR", population=75, revenue=1000, stores=["TOULON CENTRAL", "TOULOUSE SOUTH"]
 )
-fr.add_store('BIARRITZ')
-print(fr)
-# > Country(code='FR', stores=['TOULON CENTRAL', 'TOULOUSE SOUTH'], population=75)
+fr.add_store("BIARRITZ")
 
 revenue_field = fields(fr)[2]
 print(revenue_field.metadata["currency"])
+# > "EUROS"
 
-print( [field.name for field in fields(fr)])
+print([field.name for field in fields(fr)])
 # > ['code', 'stores', 'revenue', 'daily_revenue', 'population']
 
 
-# Subclassing / Inheritance '...is bad for you' according to attrs authors https://www.attrs.org/en/stable/examples.html
+# Subclassing / Inheritance '
+# ...is bad for you' according to attrs authors https://www.attrs.org/en/stable/examples.html
 
 try:
+
     @dataclass
     class ApacCountry(Country):
-        region : str
+        region: str
+
+
 except TypeError as error:
     pass
 
 # > Error - Non-default argument 'region' follows default argument
 
 
-
 # Composition
+
 from typing import List
 from dataclasses import asdict
 
 
 @dataclass
 class Store:
-    code : str
-    size : str
-    revenue : int
+    code: str
+    size: str
+    revenue: int
 
 
 @dataclass
 class Country:
     code: str
-    stores : List[Store]
+    stores: List[Store]
 
 
 stores = [
-    Store(code='PARIS',size='M',revenue=100),
-    Store(code='LYON',size='S',revenue=100)
-
+    Store(code="PARIS", size="M", revenue=100),
+    Store(code="LYON", size="S", revenue=100),
 ]
-fr = Country(code='FR',stores=stores)
+fr = Country(code="FR", stores=stores)
 print(fr.stores)
 # > [Store(code='PARIS', size='M', revenue=100), Store(code='LYON', size='S', revenue=100)]
-print (asdict(fr))
-# > {'code': 'FR', 'stores': ['TOULON CENTRAL', 'TOULOUSE SOUTH', 'BIRITTIZ'], 'revenue': 1000, 'daily_revenue': 2.73972602739726, 'population': 75}
+print(asdict(fr))
+# > {'code': 'FR', 'stores': [{'code': 'PARIS', 'size': 'M', 'revenue': 100}, {'code': 'LYON', 'size': 'S', 'revenue': 100}]}
 
 import pandas as pd
 
 stores += [
-    Store(code='BREST',size='S',revenue=100),
-    Store(code='CALAIS',size='M',revenue=100),
-    Store(code='NANTES',size='S',revenue=100),
-    Store(code='NICE',size='S',revenue=100),
-    Store(code='BORDEAUX',size='S',revenue=100),
+    Store(code="BREST", size="S", revenue=100),
+    Store(code="CALAIS", size="M", revenue=100),
+    Store(code="NANTES", size="S", revenue=100),
+    Store(code="NICE", size="S", revenue=100),
+    Store(code="BORDEAUX", size="S", revenue=100),
 ]
+
 
 @dataclass
 class Country:
     code: str
-    stores : List[Store]
+    stores: List[Store]
 
     def as_dataframe(self):
-        return pd.DataFrame([{'country_code' : self.code} | asdict(store)  for store in self.stores])
+        return pd.DataFrame(
+            [{"country_code": self.code} | asdict(store) for store in self.stores]
+        )
 
-fr = Country(code='FR',stores=stores)
+
+fr = Country(code="FR", stores=stores)
 print(fr.as_dataframe().head())
 
 # >   country_code    code size  revenue
@@ -183,19 +185,17 @@ print(fr.as_dataframe().head())
 # > 4           FR  NANTES    S      100
 
 
-
-
 @dataclass
 class Store:
-    code : str
-    size : str 
-    revenue : int = field(repr=False)
-    country : field(init=False) = None
+    code: str
+    size: str
+    revenue: int = field(repr=False)
+    country: field(init=False) = None
 
     def get_size(self):
         return self.size
 
-    def register_country(self,country):
+    def register_country(self, country):
         self.country = country
 
     def __str__(self):
@@ -205,22 +205,25 @@ class Store:
 @dataclass
 class Country:
     code: str
-    stores : List[Store] = field(repr=False)
+    stores: List[Store] = field(repr=False)
 
     def __post_init__(self):
         for store in self.stores:
             store.register_country(self)
 
-stores = [
-    Store(code='PARIS',size='M',revenue=100),
-    Store(code='LYON',size='S',revenue=100)
 
+stores = [
+    Store(code="PARIS", size="M", revenue=100),
+    Store(code="LYON", size="S", revenue=100),
 ]
 
-fr = Country(code='FR',stores=stores)
+fr = Country(code="FR", stores=stores)
 
 # > fr.stores[0]
 # Store(code='PARIS', size='M', country=Country(code='FR'))
 
 print(fr.stores[0])
 # > <Store> Code: "PARIS" Country: "FR"
+
+# Gotchas? Lack of type validation
+

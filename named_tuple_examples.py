@@ -3,8 +3,7 @@ from collections import namedtuple
 # "used to create tuple-like objects that have fields accessible by attribute lookup as well as being indexable and iterable"
 # https://docs.python.org/3/library/collections.html#collections.namedtuple
 
-Country = namedtuple("Country", ["code", "population"], defaults=[None, 0])
-
+Country = namedtuple("country", ["code", "population"], defaults=[None, 0])
 
 france = Country("FR", 75)
 japan = Country(code="JP", population=120)
@@ -13,6 +12,7 @@ print(france[0])
 # > "FR"
 fr_code = france.code
 # > "FR"
+
 code, population = france
 print(len(france))
 # > 2
@@ -29,6 +29,9 @@ for fr, jp in zip(france, japan):
 # > FR JP
 # > 75 120
 
+print(Country(code="FR", population=75))
+# > country(code='FR', population=75)
+
 
 try:
     france.population = 76
@@ -36,7 +39,6 @@ except AttributeError:
     pass
 
 
-Country = namedtuple("Country", ["code", "population"], defaults=[None, 0])
 it = Country(code="IT")
 
 print(it)
@@ -49,11 +51,9 @@ Country = NamedTuple("Country", [("code", str), ("population", int)])
 
 fr = Country("FR", "60")
 print(fr)
-
 # > Country(code='FR', population='60')
 # No type conversion / validation
 
-Country = namedtuple("Country", ["code", "population"], defaults=[None, 0])
 EmeaCountry = namedtuple("EmeaCountry", ["code", "population"], defaults=[None, 0])
 
 # The underlying datastructure is a tuple. Which can lead to some - arguably - unexpected behavour such as different namedtuples being equal
@@ -69,3 +69,4 @@ print(fr is fr2)
 
 # You can't add methods without subclassing
 
+# Gotchas? Iterable can be confused with list of named tuples
