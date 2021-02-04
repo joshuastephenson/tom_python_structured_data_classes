@@ -3,6 +3,8 @@ from dataclasses_json import dataclass_json
 from marshmallow.exceptions import ValidationError
 from pprint import pprint
 
+# "This library provides a simple API for encoding and decoding dataclasses to and from JSON."
+# https://pypi.org/project/dataclasses-json/
 
 @dataclass_json
 @dataclass
@@ -51,4 +53,4 @@ print([fr.to_json(), fr.to_dict()])
 # - Not at all obvious to load / dump via schema
 # - Conversion not v intuitive - True will not --> 1
 # - No apparent way of using the full Marshmellow functionality (e.g field must be email)
-# - Not a lot of GH activity
+# - Not being very actively developed

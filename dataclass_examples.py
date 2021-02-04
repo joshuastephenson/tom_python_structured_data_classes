@@ -190,10 +190,7 @@ class Store:
     code: str
     size: str
     revenue: int = field(repr=False)
-    country: field(init=False) = None
-
-    def get_size(self):
-        return self.size
+    country = None
 
     def register_country(self, country):
         self.country = country
@@ -206,6 +203,7 @@ class Store:
 class Country:
     code: str
     stores: List[Store] = field(repr=False)
+    population: int = 0
 
     def __post_init__(self):
         for store in self.stores:
@@ -217,7 +215,7 @@ stores = [
     Store(code="LYON", size="S", revenue=100),
 ]
 
-fr = Country(code="FR", stores=stores)
+fr = Country(code="FR", stores=stores,population=75)
 
 # > fr.stores[0]
 # Store(code='PARIS', size='M', country=Country(code='FR'))
@@ -225,5 +223,10 @@ fr = Country(code="FR", stores=stores)
 
 print(fr.stores[0])
 # > <Store> Code: "PARIS" Country: "FR"
+
+for store in fr.stores:
+    print(store.code,store.country.code,store.country.population)
+    # > PARIS FR 75
+    # > LYON FR 75
 
 # Gotchas? Lack of type validation; not necessarily obvious which dunder methods it actually creates

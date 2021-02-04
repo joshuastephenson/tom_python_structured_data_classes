@@ -11,11 +11,8 @@ from pydantic import (
 )
 from pydantic.dataclasses import dataclass
 
-"""
-
-"Data validation and settings management using python type annotations. pydantic enforces type hints at runtime, and provides user friendly errors when data is invalid.
-https://pydantic-docs.helpmanual.io/
-"""
+# "Data validation and settings management using python type annotations. pydantic enforces type hints at runtime, and provides user friendly errors when data is invalid.
+# https://pydantic-docs.helpmanual.io/
 
 
 @dataclass
@@ -35,7 +32,6 @@ class Country:
     #   NegativeFloat etc
     #   conint
     #   conlist
-    #   constr
 
     # The default types will attempt best effort conversion
     # There are also strict types such as StrictInt, StrictInt
@@ -46,7 +42,6 @@ class Country:
 fr = Country(population="123", code="FR")
 
 # Equality check works just like a dataclass
-fr = Country(population=123, code="FR")
 fr2 = Country(population=123, code="FR")
 print(fr == fr2)
 # > True
@@ -61,7 +56,7 @@ except ValidationError:
 # Pydantic validators are pretty flexible
 import dataclasses
 
-CURRENCIES = {'US':"$",'GB': "£"}
+CURRENCIES = {"US": "$", "GB": "£"}
 
 
 @dataclass
@@ -70,36 +65,35 @@ class Country:
     code: constr(min_length=2, max_length=2)
     revenue: conint(multiple_of=1000)
     cost: conint(multiple_of=1000)
-    population: conint(multiple_of=1000) = 0
+    population: conint(multiple_of=1000000) = 0
     # You can still bring in elements from standard dataclasses
-    stores: conlist(str, min_items=0, max_items=10) = dataclasses.field(default_factory=list)
+    stores: conlist(str, min_items=0, max_items=10) = dataclasses.field(
+        default_factory=list
+    )
 
-    @validator('stores',each_item=True)
+    @validator("stores", each_item=True)
     def as_code(cls, v):
-        assert v.upper() == v and ' ' not in v
-        return v 
+        assert v.upper() == v and " " not in v
+        return v
 
     @validator(
-        "revenue", "cost",pre=True
+        "revenue", "cost", pre=True
     )  # pre means we run this prior to other validation on these fields
     def remove_currency(cls, v, values):
-        country_code = values['code']
+        country_code = values["code"]
         if isinstance(v, str) and v.startswith(CURRENCIES[country_code]) and len(v) > 1:
             return v[1:]
         return v
 
-    
-
 
 us = Country(code="US", revenue=1000, cost="$1000")
-us = Country(code="US", revenue=1000, cost="$1000",stores=['NEW_YORK'])
+us = Country(code="US", revenue=1000, cost="$1000", stores=["NEW_YORK"])
 try:
-    us = Country(code="US", revenue=1000, cost="$1000",stores=['NEW YORK'])
+    us = Country(code="US", revenue=1000, cost="$1000", stores=["NEW YORK"])
 except ValidationError:
     pass
 
-# Other nice things include init hook post_init_post_parse which happens after validation
-
+# Other nice things include post_init_post_parse which happens after validation
 
 
 pprint.pprint(fr.__pydantic_model__.schema())
@@ -126,4 +120,7 @@ pprint.pprint(fr.__pydantic_model__.schema())
 #  'required': ['code', 'revenue', 'cost'],
 #  'title': 'Country',
 #  'type': 'object'}
+
+# Also has email and name types - handy for API's 
+
 # Gotchas? ....

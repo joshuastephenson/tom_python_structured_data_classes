@@ -1,10 +1,7 @@
 import attr
-"""
-attrs is the Python package that will bring back the joy of writing classes by relieving you from the drudgery of implementing object protocols (aka dunder methods).
-
-Its main goal is to help you to write concise and correct software without slowing down your code.
-https://www.attrs.org/en/stable/
-"""
+# attrs is the Python package that will bring back the joy of writing classes by relieving you from the drudgery of implementing object protocols (aka dunder methods).
+# Its main goal is to help you to write concise and correct software without slowing down your code.
+# https://www.attrs.org/en/stable/
 
 
 # Validators 
