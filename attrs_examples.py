@@ -63,8 +63,10 @@ except ValueError as e:
     print(e)
     # invalid literal for int()...
 
-# Slots
 
+# Has the same conversion to dict / duple and frozen options as we've seen
+
+# Slots
 
 @attr.s(slots=True)
 class Country:
@@ -83,5 +85,6 @@ However, they also come with several possibly surprising gotchas:"
     - ...
 
 """
+# Also has programmatic creation
 
-# Has the same conversion to dict / duple and frozen options as we've seen
+# Gotchas? 'Subclassing is bad for you'
