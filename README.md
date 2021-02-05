@@ -3,6 +3,7 @@
 ## Why use any of these?
 
 - Compared to dicts, lists etc they add structure, readability
+- All hav the option to add type annontations
 - They are quicker to create than normal classes and have 'quality by default'
 
 ## A Few of the Options
@@ -19,6 +20,6 @@
 | --------------- | ----- | ------------- |
 | Named Tuples    | 3     | 8             |
 | Attrs           | 10    | 7             |
-| Dataclasses     | 6     | 10            |
+| Dataclasses     | 6     | 9            |
 | DataclassesJSON | 7     | 7             |
 | Pydantic Dataclasses | 9     | 9             |
