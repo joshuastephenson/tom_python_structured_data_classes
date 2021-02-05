@@ -1,9 +1,9 @@
-# Structured Data Types in Python
+# Structured Data Classes in Python
 
 ## Why use any of these?
 
 - Compared to dicts, lists etc they add structure, readability
-- All hav the option to add type annontations
+- All have the option to add type annotations
 - They are quicker to create than normal classes and have 'quality by default'
 
 ## A Few of the Options
