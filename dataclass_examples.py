@@ -22,7 +22,7 @@ print(fr.code)
 # Mutable by default but @dataclass(frozen=True) will make it immutable
 fr.code = "FRANCE"
 
-# Doesn't have automatic type validation
+# Doesn't have automatic type validation (though mypy will catch this)
 fr = Country(code="FR", population="75M")
 print(fr)
 # > Country(code='FR', population='75M')
@@ -32,7 +32,7 @@ fr = Country(code="FR", population="75")
 # > Country(code='FR', population="75")
 
 
-@dataclass()
+@dataclass
 class EmeaCountry(Country):
     code: str
     population: int = 0
@@ -72,16 +72,18 @@ print(sorted(emea))
 # Pretty difficult to do on a normal class, there is a helper decorator in functools (total_ordering) but it doesn't check class
 
 
+from typing import List
 from dataclasses import field, fields
 
 
 @dataclass(order=True)
 class Country:
     code: str
-    stores: field(repr=False, default_factory=list, compare=False)
     revenue: int = field(repr=False, metadata={"currency": "EUROS"})
     daily_revenue: int = field(init=False, repr=False, metadata={"currency": "EUROS"})
     population: int = 0
+    stores: List = field(repr=False, default_factory=list, compare=False)
+
 
     def __post_init__(self):
         self.daily_revenue = self.revenue / 365
@@ -107,8 +109,7 @@ print([field.name for field in fields(fr)])
 # > ['code', 'stores', 'revenue', 'daily_revenue', 'population']
 
 
-# Subclassing / Inheritance '
-# ...is bad for you' according to attrs authors https://www.attrs.org/en/stable/examples.html
+# Subclassing
 
 try:
 
@@ -163,7 +164,7 @@ stores += [
 ]
 
 
-@dataclass
+@dataclass(frozen=True)
 class Country:
     code: str
     stores: List[Store]
@@ -200,7 +201,7 @@ class Store:
 
 
 @dataclass
-class Country:
+class `Country:
     code: str
     stores: List[Store] = field(repr=False)
     population: int = 0
