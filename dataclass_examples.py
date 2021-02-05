@@ -201,7 +201,7 @@ class Store:
 
 
 @dataclass
-class `Country:
+class Country:
     code: str
     stores: List[Store] = field(repr=False)
     population: int = 0
